@@ -19,8 +19,7 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script>
 const { useState, useMemo, useEffect, useCallback, useRef } = React;
- function _nullishCoalesce(lhs, rhsFn) { if (lhs != null) { return lhs; } else { return rhsFn(); } } function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }import { useState, useMemo, useEffect, useCallback, useRef } from "react";
-
+ function _nullishCoalesce(lhs, rhsFn) { if (lhs != null) { return lhs; } else { return rhsFn(); } } function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 // ─── CONSTANTS ─────────────────────────────────────────────────────────────────
 const STORAGE_KEY   = "nearme_v7";
 
@@ -316,11 +315,11 @@ const closeRate = (sold, appts) => appts>0 ? ((sold/appts)*100).toFixed(1)+"%" :
 // LOGIN  (role → name → PIN)
 // ═══════════════════════════════════════════════════════════════════════════════
 function LoginScreen({ onLogin, managers, canvassers, closers, pins, sharedPins }) {
-  const [step,    setStep]    = useState("role");
-  const [selRole, setSelRole] = useState(null);
-  const [selName, setSelName] = useState("");
-  const [pin,     setPin]     = useState("");
-  const [error,   setError]   = useState("");
+  const [step,    setStep]    = React.useState.call(void 0, "role");
+  const [selRole, setSelRole] = React.useState.call(void 0, null);
+  const [selName, setSelName] = React.useState.call(void 0, "");
+  const [pin,     setPin]     = React.useState.call(void 0, "");
+  const [error,   setError]   = React.useState.call(void 0, "");
   const KEYS = [1,2,3,4,5,6,7,8,9,null,0,"⌫"];
 
   const pickRole = (id) => {
@@ -475,15 +474,34 @@ function LoginScreen({ onLogin, managers, canvassers, closers, pins, sharedPins 
 // ═══════════════════════════════════════════════════════════════════════════════
 
 
-function App() {
-  const [managers,   setManagers]   = useState(()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _5 => _5.managers])   || ["Alan","Dmitry","Marcus","Jordan","Tyler"]; });
-  const [canvassers, setCanvassers] = useState(()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _6 => _6.canvassers]) || ["Kevin","Sophia","Raj","Mia","Derek","Lena","Omar","Priya"]; });
-  const [closers,    setClosers]    = useState(()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _7 => _7.closers])    || ["Alan","Dmitri"]; });
-  const [entries,    setEntries]    = useState(()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _8 => _8.entries])    || {}; });
-  const [payments,   setPayments]   = useState(()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _9 => _9.payments])   || {}; });
-  const [expenses,   setExpenses]   = useState(()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _10 => _10.expenses])   || {}; });
-  const [deptCosts,     setDeptCosts]     = useState(()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _11 => _11.deptCosts])     || []; });
-  const [fixedExpenses, setFixedExpenses] = useState(()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _12 => _12.fixedExpenses]) || [
+// Global error catcher - shows errors on screen instead of blank
+window.onerror = function(msg, src, line, col, err) {
+  document.getElementById('root').innerHTML = 
+    '<div style="background:#0f172a;min-height:100vh;padding:24px;font-family:monospace;color:#fff">' +
+    '<h2 style="color:#f97316;margin:0 0 16px">⚠️ App Error</h2>' +
+    '<p style="color:#fca5a5;font-size:14px;word-break:break-all">' + msg + '</p>' +
+    '<p style="color:#64748b;font-size:12px;margin-top:8px">Line: ' + line + ' Col: ' + col + '</p>' +
+    '<pre style="color:#94a3b8;font-size:11px;white-space:pre-wrap;margin-top:16px">' + (err && err.stack ? err.stack : '') + '</pre>' +
+    '</div>';
+  return false;
+};
+window.onunhandledrejection = function(e) {
+  document.getElementById('root').innerHTML = 
+    '<div style="background:#0f172a;min-height:100vh;padding:24px;font-family:monospace;color:#fff">' +
+    '<h2 style="color:#f97316;margin:0 0 16px">⚠️ Async Error</h2>' +
+    '<p style="color:#fca5a5;font-size:14px">' + (e.reason && e.reason.message ? e.reason.message : String(e.reason)) + '</p>' +
+    '</div>';
+};
+
+ function App() {
+  const [managers,   setManagers]   = React.useState.call(void 0, ()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _5 => _5.managers])   || ["Alan","Dmitry","Marcus","Jordan","Tyler"]; });
+  const [canvassers, setCanvassers] = React.useState.call(void 0, ()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _6 => _6.canvassers]) || ["Kevin","Sophia","Raj","Mia","Derek","Lena","Omar","Priya"]; });
+  const [closers,    setClosers]    = React.useState.call(void 0, ()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _7 => _7.closers])    || ["Alan","Dmitri"]; });
+  const [entries,    setEntries]    = React.useState.call(void 0, ()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _8 => _8.entries])    || {}; });
+  const [payments,   setPayments]   = React.useState.call(void 0, ()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _9 => _9.payments])   || {}; });
+  const [expenses,   setExpenses]   = React.useState.call(void 0, ()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _10 => _10.expenses])   || {}; });
+  const [deptCosts,     setDeptCosts]     = React.useState.call(void 0, ()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _11 => _11.deptCosts])     || []; });
+  const [fixedExpenses, setFixedExpenses] = React.useState.call(void 0, ()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _12 => _12.fixedExpenses]) || [
     {id:"fe1",  catId:"recruiting",  label:"Indeed",                monthly:"500",  notes:""},
     {id:"fe2",  catId:"marketing",   label:"Google",                monthly:"1000", notes:""},
     {id:"fe3",  catId:"vehicles",    label:"Gas",                   monthly:"1500", notes:""},
@@ -506,30 +524,30 @@ function App() {
     {id:"fe20", catId:"salaries",    label:"Maya",                  monthly:"4500", notes:""},
     {id:"fe21", catId:"salaries",    label:"Ari",                   monthly:"5500", notes:""},
   ]; });
-  const [jobProfits, setJobProfits] = useState(()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _13 => _13.jobProfits]) || {}; });
-  const [leads,      setLeads_]     = useState(()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _14 => _14.leads]) || []; });
-  const [pins,       setPins]       = useState(()=>{ const s=restore(); const p=_optionalChain([s, 'optionalAccess', _15 => _15.pins])||{}; return Object.fromEntries(Object.entries(p).filter(([,v])=>_optionalChain([v, 'optionalAccess', _16 => _16.length])===6)); });
-  const [hireDates,    setHireDates]   = useState(()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _17 => _17.hireDates])    || {}; });
-  const [graceOptOuts, setGraceOptOuts]= useState(()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _18 => _18.graceOptOuts]) || {}; });
-  const [sharedPins,  setSharedPins] = useState(()=>{ const s=restore(); const sp=_optionalChain([s, 'optionalAccess', _19 => _19.sharedPins])||DEFAULT_SHARED_PINS; return { ADMIN: _optionalChain([sp, 'access', _20 => _20.ADMIN, 'optionalAccess', _21 => _21.length])!==6?DEFAULT_SHARED_PINS.ADMIN:sp.ADMIN, DISPATCH: _optionalChain([sp, 'access', _22 => _22.DISPATCH, 'optionalAccess', _23 => _23.length])!==6?DEFAULT_SHARED_PINS.DISPATCH:sp.DISPATCH, OFFICE: _optionalChain([sp, 'access', _24 => _24.OFFICE, 'optionalAccess', _25 => _25.length])!==6?DEFAULT_SHARED_PINS.OFFICE:sp.OFFICE }; });
-  const [role,       setRole]       = useState(null);
-  const [userName,   setUserName]   = useState("");
-  const [screen,     setScreen]     = useState("dashboard");
-  const [logDate,    setLogDate]    = useState(todayStr());
-  const [fixedConfirmed, setFixedConfirmed] = useState(()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _26 => _26.fixedConfirmed]) || {}; });
-  const [toast,      setToast]      = useState(null);
-  const [viewAs,     setViewAs]     = useState(null);
-  const [showViewAs, setShowViewAs] = useState(false);
-  const [globalConfirm, setGlobalConfirm] = useState(null);
+  const [jobProfits, setJobProfits] = React.useState.call(void 0, ()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _13 => _13.jobProfits]) || {}; });
+  const [leads,      setLeads_]     = React.useState.call(void 0, ()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _14 => _14.leads]) || []; });
+  const [pins,       setPins]       = React.useState.call(void 0, ()=>{ const s=restore(); const p=_optionalChain([s, 'optionalAccess', _15 => _15.pins])||{}; return Object.fromEntries(Object.entries(p).filter(([,v])=>_optionalChain([v, 'optionalAccess', _16 => _16.length])===6)); });
+  const [hireDates,    setHireDates]   = React.useState.call(void 0, ()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _17 => _17.hireDates])    || {}; });
+  const [graceOptOuts, setGraceOptOuts]= React.useState.call(void 0, ()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _18 => _18.graceOptOuts]) || {}; });
+  const [sharedPins,  setSharedPins] = React.useState.call(void 0, ()=>{ const s=restore(); const sp=_optionalChain([s, 'optionalAccess', _19 => _19.sharedPins])||DEFAULT_SHARED_PINS; return { ADMIN: _optionalChain([sp, 'access', _20 => _20.ADMIN, 'optionalAccess', _21 => _21.length])!==6?DEFAULT_SHARED_PINS.ADMIN:sp.ADMIN, DISPATCH: _optionalChain([sp, 'access', _22 => _22.DISPATCH, 'optionalAccess', _23 => _23.length])!==6?DEFAULT_SHARED_PINS.DISPATCH:sp.DISPATCH, OFFICE: _optionalChain([sp, 'access', _24 => _24.OFFICE, 'optionalAccess', _25 => _25.length])!==6?DEFAULT_SHARED_PINS.OFFICE:sp.OFFICE }; });
+  const [role,       setRole]       = React.useState.call(void 0, null);
+  const [userName,   setUserName]   = React.useState.call(void 0, "");
+  const [screen,     setScreen]     = React.useState.call(void 0, "dashboard");
+  const [logDate,    setLogDate]    = React.useState.call(void 0, todayStr());
+  const [fixedConfirmed, setFixedConfirmed] = React.useState.call(void 0, ()=>{ const s=restore(); return _optionalChain([s, 'optionalAccess', _26 => _26.fixedConfirmed]) || {}; });
+  const [toast,      setToast]      = React.useState.call(void 0, null);
+  const [viewAs,     setViewAs]     = React.useState.call(void 0, null);
+  const [showViewAs, setShowViewAs] = React.useState.call(void 0, false);
+  const [globalConfirm, setGlobalConfirm] = React.useState.call(void 0, null);
   // Leaders filter — persists across navigation
-  const [ldrsPreset,   setLdrsPreset]   = useState("month");
-  const [ldrsFromDate, setLdrsFromDate] = useState(()=>{ const d=new Date(); d.setDate(1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`; });
-  const [ldrsToDate,   setLdrsToDate]   = useState(todayStr());
-  const showConfirm = useCallback((msg, onYes) => setGlobalConfirm({msg, onYes}), []);
+  const [ldrsPreset,   setLdrsPreset]   = React.useState.call(void 0, "month");
+  const [ldrsFromDate, setLdrsFromDate] = React.useState.call(void 0, ()=>{ const d=new Date(); d.setDate(1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`; });
+  const [ldrsToDate,   setLdrsToDate]   = React.useState.call(void 0, todayStr());
+  const showConfirm = React.useCallback.call(void 0, (msg, onYes) => setGlobalConfirm({msg, onYes}), []);
 
 
   // ── Persist to localStorage + Firebase on every state change ─────────────
-  useEffect(()=>{
+  React.useEffect.call(void 0, ()=>{
     const state = {managers,canvassers,closers,entries,payments,expenses,deptCosts,fixedExpenses,fixedConfirmed,jobProfits,leads,pins,hireDates,sharedPins,graceOptOuts};
     persist(state);
     fbSave(state);
@@ -537,54 +555,54 @@ function App() {
 
   // KPI auto-open removed — admin lands on dashboard directly
 
-  const showToast = useCallback((msg,type="success")=>{ setToast({msg,type}); setTimeout(()=>setToast(null),2800); },[]);
+  const showToast = React.useCallback.call(void 0, (msg,type="success")=>{ setToast({msg,type}); setTimeout(()=>setToast(null),2800); },[]);
 
   // Van log
-  const getVanVal = useCallback((date,mgr,cvs)=>_optionalChain([entries, 'access', _27 => _27[date], 'optionalAccess', _28 => _28.vanLog, 'optionalAccess', _29 => _29[mgr], 'optionalAccess', _30 => _30[cvs]])||"",[entries]);
-  const setVanVal = useCallback((date,mgr,cvs,val)=>setEntries(p=>({...p,[date]:{...p[date],vanLog:{...(_optionalChain([p, 'access', _31 => _31[date], 'optionalAccess', _32 => _32.vanLog])||{}),[mgr]:{...(_optionalChain([p, 'access', _33 => _33[date], 'optionalAccess', _34 => _34.vanLog, 'optionalAccess', _35 => _35[mgr]])||{}),[cvs]:val}}}})),[]);
+  const getVanVal = React.useCallback.call(void 0, (date,mgr,cvs)=>_optionalChain([entries, 'access', _27 => _27[date], 'optionalAccess', _28 => _28.vanLog, 'optionalAccess', _29 => _29[mgr], 'optionalAccess', _30 => _30[cvs]])||"",[entries]);
+  const setVanVal = React.useCallback.call(void 0, (date,mgr,cvs,val)=>setEntries(p=>({...p,[date]:{...p[date],vanLog:{...(_optionalChain([p, 'access', _31 => _31[date], 'optionalAccess', _32 => _32.vanLog])||{}),[mgr]:{...(_optionalChain([p, 'access', _33 => _33[date], 'optionalAccess', _34 => _34.vanLog, 'optionalAccess', _35 => _35[mgr]])||{}),[cvs]:val}}}})),[]);
 
   // Payments — one total per pay date
-  const getPayment  = useCallback((date)=>payments[date]||"",[payments]);
-  const setPayment  = useCallback((date,val)=>setPayments(p=>({...p,[date]:val})),[]); 
+  const getPayment  = React.useCallback.call(void 0, (date)=>payments[date]||"",[payments]);
+  const setPayment  = React.useCallback.call(void 0, (date,val)=>setPayments(p=>({...p,[date]:val})),[]); 
 
   // Leads pipeline CRUD
-  const addLead_         = useCallback((lead)=>setLeads_(p=>[lead,...p]),[]);
-  const bulkAddLeads_    = useCallback((newLeads)=>setLeads_(p=>[...newLeads,...p]),[]);
-  const bulkUpdateLeads_ = useCallback((fn)=>setLeads_(p=>p.map(fn)),[]);
-  const updateLead_      = useCallback((id,patch)=>setLeads_(p=>p.map(l=>l.id===id?{...l,...patch}:l)),[]);
-  const deleteLead_      = useCallback((id)=>setLeads_(p=>p.filter(l=>l.id!==id)),[]);
-  const clearLeads       = useCallback(()=>setLeads_([]),[]);
-  const markSeen    = useCallback(()=>setLeads_(p=>p.map(l=>l.seenByDispatch?l:{...l,seenByDispatch:true})),[]);
+  const addLead_         = React.useCallback.call(void 0, (lead)=>setLeads_(p=>[lead,...p]),[]);
+  const bulkAddLeads_    = React.useCallback.call(void 0, (newLeads)=>setLeads_(p=>[...newLeads,...p]),[]);
+  const bulkUpdateLeads_ = React.useCallback.call(void 0, (fn)=>setLeads_(p=>p.map(fn)),[]);
+  const updateLead_      = React.useCallback.call(void 0, (id,patch)=>setLeads_(p=>p.map(l=>l.id===id?{...l,...patch}:l)),[]);
+  const deleteLead_      = React.useCallback.call(void 0, (id)=>setLeads_(p=>p.filter(l=>l.id!==id)),[]);
+  const clearLeads       = React.useCallback.call(void 0, ()=>setLeads_([]),[]);
+  const markSeen    = React.useCallback.call(void 0, ()=>setLeads_(p=>p.map(l=>l.seenByDispatch?l:{...l,seenByDispatch:true})),[]);
 
   // Derived
-  const allDates   = useMemo(()=>Object.keys(entries).sort(),[entries]);
-  const payDates   = useMemo(()=>Object.keys(payments).sort(),[payments]);
-  const allTimeMgr     = useMemo(()=>aggMgrFromLeads(leads,managers),[leads,managers]);
-  const allTimeClosers = useMemo(()=>aggClosers(leads,closers),[leads,closers]);
+  const allDates   = React.useMemo.call(void 0, ()=>Object.keys(entries).sort(),[entries]);
+  const payDates   = React.useMemo.call(void 0, ()=>Object.keys(payments).sort(),[payments]);
+  const allTimeMgr     = React.useMemo.call(void 0, ()=>aggMgrFromLeads(leads,managers),[leads,managers]);
+  const allTimeClosers = React.useMemo.call(void 0, ()=>aggClosers(leads,closers),[leads,closers]);
   const tmKey = getMonthKey(todayStr()), wkKey=getWeekKey(todayStr());
   // Lead-based FM stats
-  const allTimeCvs = useMemo(()=>aggLeads(leads,canvassers),[leads,canvassers]);
-  const tmLeads    = useMemo(()=>leads.filter(l=>getMonthKey(l.createdDate)===tmKey),[leads,tmKey]);
-  const wkLeads    = useMemo(()=>leads.filter(l=>getWeekKey(l.createdDate)===wkKey),[leads,wkKey]);
-  const tmCvs      = useMemo(()=>aggLeads(tmLeads,canvassers),[tmLeads,canvassers]);
-  const wkCvs      = useMemo(()=>aggLeads(wkLeads,canvassers),[wkLeads,canvassers]);
-  const tmTot      = useMemo(()=>Object.values(tmCvs).reduce((a,v)=>({total:a.total+v.total,booked:a.booked+v.booked,notBooked:a.notBooked+v.notBooked,pitched:a.pitched+v.pitched,sold:a.sold+v.sold,revenue:a.revenue+v.revenue}),{total:0,booked:0,notBooked:0,pitched:0,sold:0,revenue:0}),[tmCvs]);
-  const wkTot      = useMemo(()=>Object.values(wkCvs).reduce((a,v)=>({total:a.total+v.total,booked:a.booked+v.booked,notBooked:a.notBooked+v.notBooked,pitched:a.pitched+v.pitched,sold:a.sold+v.sold,revenue:a.revenue+v.revenue}),{total:0,booked:0,notBooked:0,pitched:0,sold:0,revenue:0}),[wkCvs]);
-  const tmPayTotal = useMemo(()=>aggPayroll(payments, payDates.filter(d=>getMonthKey(d)===tmKey)),[payments,payDates,tmKey]);
-  const allPayTotal= useMemo(()=>aggPayroll(payments, payDates),[payments,payDates]);
-  const expDates   = useMemo(()=>Object.keys(expenses).sort(),[expenses]);
-  const tmExpTotal = useMemo(()=>aggExpenses(expenses,managers,expDates.filter(d=>getMonthKey(d)===tmKey)).total,[expenses,managers,expDates,tmKey]);
-  const allExpTotal= useMemo(()=>aggExpenses(expenses,managers,expDates).total,[expenses,managers,expDates]);
+  const allTimeCvs = React.useMemo.call(void 0, ()=>aggLeads(leads,canvassers),[leads,canvassers]);
+  const tmLeads    = React.useMemo.call(void 0, ()=>leads.filter(l=>getMonthKey(l.createdDate)===tmKey),[leads,tmKey]);
+  const wkLeads    = React.useMemo.call(void 0, ()=>leads.filter(l=>getWeekKey(l.createdDate)===wkKey),[leads,wkKey]);
+  const tmCvs      = React.useMemo.call(void 0, ()=>aggLeads(tmLeads,canvassers),[tmLeads,canvassers]);
+  const wkCvs      = React.useMemo.call(void 0, ()=>aggLeads(wkLeads,canvassers),[wkLeads,canvassers]);
+  const tmTot      = React.useMemo.call(void 0, ()=>Object.values(tmCvs).reduce((a,v)=>({total:a.total+v.total,booked:a.booked+v.booked,notBooked:a.notBooked+v.notBooked,pitched:a.pitched+v.pitched,sold:a.sold+v.sold,revenue:a.revenue+v.revenue}),{total:0,booked:0,notBooked:0,pitched:0,sold:0,revenue:0}),[tmCvs]);
+  const wkTot      = React.useMemo.call(void 0, ()=>Object.values(wkCvs).reduce((a,v)=>({total:a.total+v.total,booked:a.booked+v.booked,notBooked:a.notBooked+v.notBooked,pitched:a.pitched+v.pitched,sold:a.sold+v.sold,revenue:a.revenue+v.revenue}),{total:0,booked:0,notBooked:0,pitched:0,sold:0,revenue:0}),[wkCvs]);
+  const tmPayTotal = React.useMemo.call(void 0, ()=>aggPayroll(payments, payDates.filter(d=>getMonthKey(d)===tmKey)),[payments,payDates,tmKey]);
+  const allPayTotal= React.useMemo.call(void 0, ()=>aggPayroll(payments, payDates),[payments,payDates]);
+  const expDates   = React.useMemo.call(void 0, ()=>Object.keys(expenses).sort(),[expenses]);
+  const tmExpTotal = React.useMemo.call(void 0, ()=>aggExpenses(expenses,managers,expDates.filter(d=>getMonthKey(d)===tmKey)).total,[expenses,managers,expDates,tmKey]);
+  const allExpTotal= React.useMemo.call(void 0, ()=>aggExpenses(expenses,managers,expDates).total,[expenses,managers,expDates]);
   const tmDeptCost = tmPayTotal + tmExpTotal;
   const allDeptCost= allPayTotal + allExpTotal;
-  const unseenCount   = useMemo(()=>leads.filter(l=>!l.seenByDispatch).length,[leads]);
-  const followupCount = useMemo(()=>leads.filter(l=>l.bookingStatus==="booked"&&!l.outcome&&l.apptDate&&l.apptDate<=todayStr()).length,[leads]);
+  const unseenCount   = React.useMemo.call(void 0, ()=>leads.filter(l=>!l.seenByDispatch).length,[leads]);
+  const followupCount = React.useMemo.call(void 0, ()=>leads.filter(l=>l.bookingStatus==="booked"&&!l.outcome&&l.apptDate&&l.apptDate<=todayStr()).length,[leads]);
 
   // Global drill-down state — must be before any early return
-  const [drill,      setDrill]      = useState(null);
-  const [editLeadId, setEditLeadId] = useState(null);
-  const showDrill    = useCallback((title, leadsArr) => setDrill(makeDrill(title, leadsArr)), []);
-  const openLeadEdit = useCallback((lead) => {
+  const [drill,      setDrill]      = React.useState.call(void 0, null);
+  const [editLeadId, setEditLeadId] = React.useState.call(void 0, null);
+  const showDrill    = React.useCallback.call(void 0, (title, leadsArr) => setDrill(makeDrill(title, leadsArr)), []);
+  const openLeadEdit = React.useCallback.call(void 0, (lead) => {
     setDrill(null);
     const effRole = _optionalChain([viewAs, 'optionalAccess', _36 => _36.role]) || role;
     if (effRole==="VAN_MGR") {
@@ -614,11 +632,11 @@ function App() {
   };
 
   // ── Pull to refresh ───────────────────────────────────────────────────────
-  const [refreshing, setRefreshing] = useState(false);
-  const touchStartY = useRef(0);
-  const mainRef = useRef(null);
+  const [refreshing, setRefreshing] = React.useState.call(void 0, false);
+  const touchStartY = React.useRef.call(void 0, 0);
+  const mainRef = React.useRef.call(void 0, null);
 
-  const doRefresh = useCallback(async () => {
+  const doRefresh = React.useCallback.call(void 0, async () => {
     if (refreshing) return;
     setRefreshing(true);
     try {
@@ -645,11 +663,11 @@ function App() {
     setRefreshing(false);
   }, [refreshing]);
 
-  const handleTouchStart = useCallback((e) => {
+  const handleTouchStart = React.useCallback.call(void 0, (e) => {
     touchStartY.current = e.touches[0].clientY;
   }, []);
 
-  const handleTouchEnd = useCallback((e) => {
+  const handleTouchEnd = React.useCallback.call(void 0, (e) => {
     const delta = e.changedTouches[0].clientY - touchStartY.current;
     const scrollTop = _optionalChain([mainRef, 'access', _47 => _47.current, 'optionalAccess', _48 => _48.scrollTop]) || 0;
     if (delta > 70 && scrollTop === 0) doRefresh();
@@ -841,17 +859,16 @@ function App() {
       )
     )
   );
-}
-
+} 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════════════════════════
 // VAN BONUS — Van Manager bonus tracker standalone screen
 // ═══════════════════════════════════════════════════════════════════════════════
 function VanBonus({ leads, managers, userName, showDrill }) {
   const myName = managers.find(m=>m.toLowerCase()===userName.toLowerCase())||managers[0]||"";
-  const [bonusTab,        setBonusTab]        = useState("month");
-  const [bonusCustomFrom, setBonusCustomFrom] = useState(()=>{ const d=new Date(); d.setDate(1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`; });
-  const [bonusCustomTo,   setBonusCustomTo]   = useState(todayStr());
+  const [bonusTab,        setBonusTab]        = React.useState.call(void 0, "month");
+  const [bonusCustomFrom, setBonusCustomFrom] = React.useState.call(void 0, ()=>{ const d=new Date(); d.setDate(1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`; });
+  const [bonusCustomTo,   setBonusCustomTo]   = React.useState.call(void 0, todayStr());
 
   const today2  = todayStr();
   const tmKey2  = getMonthKey(today2);
@@ -985,14 +1002,14 @@ const OUTCOME_OPTS = [
 // ADDRESS AUTOCOMPLETE
 // ═══════════════════════════════════════════════════════════════════════════════
 function AddressAutocomplete({ value, onChange, placeholder, className }) {
-  const [suggestions, setSuggestions] = useState([]);
-  const [open,        setOpen]        = useState(false);
-  const [loading,     setLoading]     = useState(false);
-  const timerRef = useRef(null);
-  const wrapRef  = useRef(null);
-  const inputRef = useRef(null);
+  const [suggestions, setSuggestions] = React.useState.call(void 0, []);
+  const [open,        setOpen]        = React.useState.call(void 0, false);
+  const [loading,     setLoading]     = React.useState.call(void 0, false);
+  const timerRef = React.useRef.call(void 0, null);
+  const wrapRef  = React.useRef.call(void 0, null);
+  const inputRef = React.useRef.call(void 0, null);
 
-  useEffect(() => {
+  React.useEffect.call(void 0, () => {
     const handler = (e) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);
     };
@@ -1090,13 +1107,13 @@ function AddressAutocomplete({ value, onChange, placeholder, className }) {
 function VanLeads({ leads, addLead_, updateLead_, deleteLead_, canvassers, managers, role, userName, showToast, showConfirm, showDrill, editLeadId, clearEditLeadId }) {
   const myName = role==="VAN_MGR" ? (managers.find(m=>m.toLowerCase()===userName.toLowerCase())||managers[0]||"") : null;
 
-  const [showAdd,   setShowAdd]   = useState(false);
-  const [editLead,  setEditLead]  = useState(null);
-  const [selMgr,    setSelMgr]    = useState(myName||managers[0]||"");
-  const [selFM,     setSelFM]     = useState(canvassers[0]||"");
-  const [form,      setForm]      = useState({customerName:"",phone:"",address:"",notes:"",apptDate:"",apptTime:"",createdDate:todayStr()});
-  const [editForm,  setEditForm]  = useState({customerName:"",phone:"",address:"",notes:"",apptDate:"",apptTime:""});
-  const [filter,    setFilter]    = useState("all");
+  const [showAdd,   setShowAdd]   = React.useState.call(void 0, false);
+  const [editLead,  setEditLead]  = React.useState.call(void 0, null);
+  const [selMgr,    setSelMgr]    = React.useState.call(void 0, myName||managers[0]||"");
+  const [selFM,     setSelFM]     = React.useState.call(void 0, canvassers[0]||"");
+  const [form,      setForm]      = React.useState.call(void 0, {customerName:"",phone:"",address:"",notes:"",apptDate:"",apptTime:"",createdDate:todayStr()});
+  const [editForm,  setEditForm]  = React.useState.call(void 0, {customerName:"",phone:"",address:"",notes:"",apptDate:"",apptTime:""});
+  const [filter,    setFilter]    = React.useState.call(void 0, "all");
 
   const openEditModal = (l) => {
     setEditLead(l);
@@ -1122,7 +1139,7 @@ function VanLeads({ leads, addLead_, updateLead_, deleteLead_, canvassers, manag
   };
 
   // Auto-open edit modal when navigated from drill-down
-  useEffect(()=>{
+  React.useEffect.call(void 0, ()=>{
     if (editLeadId && leads) {
       const l = leads.find(x=>x.id===editLeadId);
       if (l) { openEditModal(l); if (clearEditLeadId) clearEditLeadId(); }
@@ -1137,7 +1154,7 @@ function VanLeads({ leads, addLead_, updateLead_, deleteLead_, canvassers, manag
     return true;
   });
 
-  const [dupeLead,  setDupeLead]  = useState(null); // existing lead that matches
+  const [dupeLead,  setDupeLead]  = React.useState.call(void 0, null); // existing lead that matches
 
   const normalizePhone = (p) => p.replace(/\D/g,"");
   const normalizeAddr  = (a) => a.toLowerCase().replace(/\s+/g," ").trim();
@@ -1433,13 +1450,13 @@ function VanLeads({ leads, addLead_, updateLead_, deleteLead_, canvassers, manag
 // DISPATCH LEADS — Dispatch calls leads, books or declines, logs outcomes
 // ═══════════════════════════════════════════════════════════════════════════════
 function DispatchLeads({ leads, updateLead_, deleteLead_, canvassers, managers, closers, markSeen, showToast, showConfirm, followupCount, editLeadId, clearEditLeadId }) {
-  const [search,      setSearch]      = useState("");
-  const [statusFilter,setStatusFilter]= useState("all");
-  const [selected,    setSelected]    = useState(null);
-  const [modalStep,   setModalStep]   = useState("book");
-  const [editing,     setEditing]     = useState(false);
-  const [editFields,  setEditFields]  = useState({customerName:"",phone:"",address:"",notes:""});
-  const [booking,     setBooking]     = useState({apptDate:"",apptTime:"",closerName:"",soldDate:"",reason:"",revenue:"",cancelReason:"",cancelOther:"",selectedOutcome:""});
+  const [search,      setSearch]      = React.useState.call(void 0, "");
+  const [statusFilter,setStatusFilter]= React.useState.call(void 0, "all");
+  const [selected,    setSelected]    = React.useState.call(void 0, null);
+  const [modalStep,   setModalStep]   = React.useState.call(void 0, "book");
+  const [editing,     setEditing]     = React.useState.call(void 0, false);
+  const [editFields,  setEditFields]  = React.useState.call(void 0, {customerName:"",phone:"",address:"",notes:""});
+  const [booking,     setBooking]     = React.useState.call(void 0, {apptDate:"",apptTime:"",closerName:"",soldDate:"",reason:"",revenue:"",cancelReason:"",cancelOther:"",selectedOutcome:""});
 
   const openLead = (l) => {
     setSelected(l.id);
@@ -1461,10 +1478,10 @@ function DispatchLeads({ leads, updateLead_, deleteLead_, canvassers, managers, 
     setModalStep(!l.bookingStatus ? "book" : (alreadyPast || l.outcome) ? "outcome" : "book");
   };
 
-  useEffect(()=>{ markSeen(); },[]);
+  React.useEffect.call(void 0, ()=>{ markSeen(); },[]);
 
   // Auto-open lead from global drill-down edit — now safe since openLead is defined above
-  useEffect(()=>{
+  React.useEffect.call(void 0, ()=>{
     if (editLeadId && leads) {
       const l = leads.find(x=>x.id===editLeadId);
       if (l) { openLead(l); if (clearEditLeadId) clearEditLeadId(); }
@@ -2167,15 +2184,15 @@ function Dashboard({ managers, canvassers, leads, tmPayTotal, tmExpTotal, tmDept
   const tmMargin      = tmGrossRev>0 ? (tmGrossProfit/tmGrossRev)*100 : null;
   const marginCol     = tmMargin===null?"#94a3b8":tmMargin>=MARGIN_GOAL?"#22c55e":tmMargin>=30?"#f97316":"#ef4444";
 
-  const [dashPeriod, setDashPeriod] = useState("month");
-  const [customFrom, setCustomFrom] = useState(()=>{ const d=new Date(); d.setDate(1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`; });
-  const [customTo,   setCustomTo]   = useState(today);
-  const [showCustom, setShowCustom] = useState(false);
+  const [dashPeriod, setDashPeriod] = React.useState.call(void 0, "month");
+  const [customFrom, setCustomFrom] = React.useState.call(void 0, ()=>{ const d=new Date(); d.setDate(1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`; });
+  const [customTo,   setCustomTo]   = React.useState.call(void 0, today);
+  const [showCustom, setShowCustom] = React.useState.call(void 0, false);
 
   const wkStart = (()=>{ const d=new Date(); d.setDate(d.getDate()-(d.getDay()===0?6:d.getDay()-1)); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; })();
   const yrStart = `${new Date().getFullYear()}-01-01`;
 
-  const periodLeads = useMemo(()=>{
+  const periodLeads = React.useMemo.call(void 0, ()=>{
     const lastMonthDate = new Date(); lastMonthDate.setMonth(lastMonthDate.getMonth()-1);
     const lastMonthKey  = `${lastMonthDate.getFullYear()}-${String(lastMonthDate.getMonth()+1).padStart(2,"0")}`;
     const yr = new Date().getFullYear();
@@ -2197,7 +2214,7 @@ function Dashboard({ managers, canvassers, leads, tmPayTotal, tmExpTotal, tmDept
     return leads.filter(l=>{ const d=l.createdDate||""; return d>=from && d<=to; });
   },[leads,dashPeriod,customFrom,customTo,today,wkStart,tmKey,yrStart]);
 
-  const pTot = useMemo(()=>periodLeads.reduce(
+  const pTot = React.useMemo.call(void 0, ()=>periodLeads.reduce(
     (a,l)=>({total:a.total+1,booked:a.booked+(l.bookingStatus==="booked"?1:0),notBooked:a.notBooked+(l.bookingStatus==="notBooked"?1:0),pitched:a.pitched+(l.outcome==="pitched"||l.outcome==="sold"?1:0),sold:a.sold+(l.outcome==="sold"?1:0),revenue:a.revenue+(l.outcome==="sold"?parseFloat(l.revenue)||0:0)}),
     {total:0,booked:0,notBooked:0,pitched:0,sold:0,revenue:0}
   ),[periodLeads]);
@@ -2209,7 +2226,7 @@ function Dashboard({ managers, canvassers, leads, tmPayTotal, tmExpTotal, tmDept
   const pMarginCol   = pMargin===null?"#94a3b8":pMargin>=MARGIN_GOAL?"#22c55e":pMargin>=30?"#f97316":"#ef4444";
 
   // Period dept cost — payroll + van expenses + fixed + one-off
-  const pNetProfit = useMemo(()=>{
+  const pNetProfit = React.useMemo.call(void 0, ()=>{
     if (!pGrossProfit || pGrossRev===0) return null;
     const periodFrom = periodLeads.length ? periodLeads.reduce((min,l)=>l.createdDate<min?l.createdDate:min, periodLeads[0].createdDate) : null;
     const periodTo   = periodLeads.length ? periodLeads.reduce((max,l)=>l.createdDate>max?l.createdDate:max, periodLeads[0].createdDate) : null;
@@ -2312,10 +2329,10 @@ function Dashboard({ managers, canvassers, leads, tmPayTotal, tmExpTotal, tmDept
 const COST_CATS = ["💵 Payroll","⛽ Gas","📢 Indeed / Recruiting","🚗 Vehicle","🛒 Supplies","🍽️ Meals","📱 Software / Tools","📦 Materials","📋 Other"];
 
 function DeptCost({ payments, setPayment, getPayment, deptCosts, setDeptCosts, fixedExpenses, setFixedExpenses, fixedConfirmed, setFixedConfirmed, logDate, setLogDate, showToast, allPayTotal, allExpTotal, expenses, managers, leads, jobProfits }) {
-  const [tab,    setTab]    = useState("monthly");
-  const [period, setPeriod] = useState("month");
-  const [editConfirmKey, setEditConfirmKey]   = useState(null);
-  const [editConfirmAmt, setEditConfirmAmt]   = useState("");
+  const [tab,    setTab]    = React.useState.call(void 0, "monthly");
+  const [period, setPeriod] = React.useState.call(void 0, "month");
+  const [editConfirmKey, setEditConfirmKey]   = React.useState.call(void 0, null);
+  const [editConfirmAmt, setEditConfirmAmt]   = React.useState.call(void 0, "");
 
   const FIXED_CATS = [
     {id:"rent",        label:"🏢 Rent / Office",        color:"#3b82f6"},
@@ -2330,7 +2347,7 @@ function DeptCost({ payments, setPayment, getPayment, deptCosts, setDeptCosts, f
   ]; // month | year
 
   // ── PAYROLL TAB ──────────────────────────────────────────────────────────────
-  const PAY_DATES = useMemo(()=>{
+  const PAY_DATES = React.useMemo.call(void 0, ()=>{
     const anchor = new Date("2026-04-10T12:00:00");
     const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
     const dates = [];
@@ -2348,13 +2365,13 @@ function DeptCost({ payments, setPayment, getPayment, deptCosts, setDeptCosts, f
   const past     = PAY_DATES.filter(d => d < today).reverse().slice(0, 10);
   const nextPay  = upcoming[0] || null;
   const daysUntil = nextPay ? Math.round((new Date(nextPay+"T12:00:00") - new Date(today+"T12:00:00")) / 86400000) : null;
-  const payHistory = useMemo(()=>PAY_DATES.filter(d=>parseFloat(payments[d])>0).sort((a,b)=>b.localeCompare(a)),[payments,PAY_DATES]);
+  const payHistory = React.useMemo.call(void 0, ()=>PAY_DATES.filter(d=>parseFloat(payments[d])>0).sort((a,b)=>b.localeCompare(a)),[payments,PAY_DATES]);
 
   // ── OTHER COSTS TAB ──────────────────────────────────────────────────────────
-  const [newCat,    setNewCat]    = useState(COST_CATS[1]);
-  const [newDesc,   setNewDesc]   = useState("");
-  const [newAmt,    setNewAmt]    = useState("");
-  const [newDate,   setNewDate]   = useState(today);
+  const [newCat,    setNewCat]    = React.useState.call(void 0, COST_CATS[1]);
+  const [newDesc,   setNewDesc]   = React.useState.call(void 0, "");
+  const [newAmt,    setNewAmt]    = React.useState.call(void 0, "");
+  const [newDate,   setNewDate]   = React.useState.call(void 0, today);
 
   const addCost = () => {
     if (!newAmt || parseFloat(newAmt)<=0) { showToast("Enter an amount","error"); return; }
@@ -2866,10 +2883,10 @@ function DeptCost({ payments, setPayment, getPayment, deptCosts, setDeptCosts, f
 // REPORTS
 // ═══════════════════════════════════════════════════════════════════════════════
 function Reports({ managers, canvassers, closers, entries, payments, expenses, leads, payDates, expDates, showDrill, deptCosts, fixedExpenses, fixedConfirmed }) {
-  const [tab,        setTab]        = useState("canvassers");
-  const [preset,     setPreset]     = useState("month");
-  const [customFrom, setCustomFrom] = useState(()=>{ const d=new Date(); d.setDate(1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`; });
-  const [customTo,   setCustomTo]   = useState(todayStr());
+  const [tab,        setTab]        = React.useState.call(void 0, "canvassers");
+  const [preset,     setPreset]     = React.useState.call(void 0, "month");
+  const [customFrom, setCustomFrom] = React.useState.call(void 0, ()=>{ const d=new Date(); d.setDate(1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`; });
+  const [customTo,   setCustomTo]   = React.useState.call(void 0, todayStr());
 
   const REPORT_PRESETS = [
     { id:"week",      label:"Week"       },
@@ -2881,7 +2898,7 @@ function Reports({ managers, canvassers, closers, entries, payments, expenses, l
     { id:"all",       label:"All Time"   },
   ];
 
-  const { from, to } = useMemo(()=>{
+  const { from, to } = React.useMemo.call(void 0, ()=>{
     const today = todayStr();
     const yr    = new Date().getFullYear();
     const lm    = new Date(); lm.setMonth(lm.getMonth()-1);
@@ -2905,19 +2922,19 @@ function Reports({ managers, canvassers, closers, entries, payments, expenses, l
     return { from:customFrom, to:customTo };
   },[preset, customFrom, customTo]);
 
-  const periodLeads = useMemo(()=>(leads||[]).filter(l=>{ const d=l.createdDate||""; return d>=from&&d<=to; }),[leads,from,to]);
+  const periodLeads = React.useMemo.call(void 0, ()=>(leads||[]).filter(l=>{ const d=l.createdDate||""; return d>=from&&d<=to; }),[leads,from,to]);
   // For revenue/sold metrics use soldDate to match DeptCost (a lead created in Dec sold in Jan counts in Jan)
-  const soldLeads   = useMemo(()=>(leads||[]).filter(l=>{ if(l.outcome!=="sold") return false; const d=l.soldDate||l.createdDate||""; return d>=from&&d<=to; }),[leads,from,to]);
-  const mgrAgg      = useMemo(()=>aggMgrFromLeads(periodLeads,managers),[periodLeads,managers]);
-  const cvsAgg      = useMemo(()=>aggLeads(periodLeads,canvassers),[periodLeads,canvassers]);
-  const closerAgg   = useMemo(()=>aggClosers(periodLeads,closers||[]),[periodLeads,closers]);
-  const pDates      = useMemo(()=>payDates.filter(d=>d>=from&&d<=to),[payDates,from,to]);
-  const eDates      = useMemo(()=>(expDates||[]).filter(d=>d>=from&&d<=to),[expDates,from,to]);
-  const payTotal    = useMemo(()=>aggPayroll(payments,pDates),[payments,pDates]);
-  const expData     = useMemo(()=>aggExpenses(expenses||{},managers,eDates),[expenses,managers,eDates]);
+  const soldLeads   = React.useMemo.call(void 0, ()=>(leads||[]).filter(l=>{ if(l.outcome!=="sold") return false; const d=l.soldDate||l.createdDate||""; return d>=from&&d<=to; }),[leads,from,to]);
+  const mgrAgg      = React.useMemo.call(void 0, ()=>aggMgrFromLeads(periodLeads,managers),[periodLeads,managers]);
+  const cvsAgg      = React.useMemo.call(void 0, ()=>aggLeads(periodLeads,canvassers),[periodLeads,canvassers]);
+  const closerAgg   = React.useMemo.call(void 0, ()=>aggClosers(periodLeads,closers||[]),[periodLeads,closers]);
+  const pDates      = React.useMemo.call(void 0, ()=>payDates.filter(d=>d>=from&&d<=to),[payDates,from,to]);
+  const eDates      = React.useMemo.call(void 0, ()=>(expDates||[]).filter(d=>d>=from&&d<=to),[expDates,from,to]);
+  const payTotal    = React.useMemo.call(void 0, ()=>aggPayroll(payments,pDates),[payments,pDates]);
+  const expData     = React.useMemo.call(void 0, ()=>aggExpenses(expenses||{},managers,eDates),[expenses,managers,eDates]);
   const expTotal    = expData.total;
   // Fixed: sum monthly rate × number of distinct months in range (matching DeptCost logic)
-  const fixedTotal  = useMemo(()=>{
+  const fixedTotal  = React.useMemo.call(void 0, ()=>{
     const monthlyRate = (fixedExpenses||[]).reduce((s,e)=>s+(parseFloat(e.monthly)||0),0);
     if (!monthlyRate) return 0;
     // Count distinct months covered by payroll/expense dates in range
@@ -2937,10 +2954,10 @@ function Reports({ managers, canvassers, closers, entries, payments, expenses, l
     return total;
   },[fixedExpenses, fixedConfirmed, pDates, eDates, leads, from, to]);
   // One-off dept costs in range (using same date field as DeptCost)
-  const oneOffTotal = useMemo(()=>(deptCosts||[]).filter(c=>{ const d=c.date||""; return d>=from&&d<=to; }).reduce((s,c)=>s+(parseFloat(c.amount)||0),0),[deptCosts,from,to]);
+  const oneOffTotal = React.useMemo.call(void 0, ()=>(deptCosts||[]).filter(c=>{ const d=c.date||""; return d>=from&&d<=to; }).reduce((s,c)=>s+(parseFloat(c.amount)||0),0),[deptCosts,from,to]);
   const deptCost    = payTotal + expTotal + fixedTotal + oneOffTotal;
-  const tt          = useMemo(()=>Object.values(cvsAgg).reduce((a,v)=>({total:a.total+v.total,booked:a.booked+v.booked,notBooked:a.notBooked+v.notBooked,pitched:a.pitched+v.pitched,sold:a.sold+v.sold,revenue:a.revenue+v.revenue}),{total:0,booked:0,notBooked:0,pitched:0,sold:0,revenue:0}),[cvsAgg]);
-  const revenue     = useMemo(()=>soldLeads.reduce((s,l)=>s+(parseFloat(l.revenue)||0),0),[soldLeads]);
+  const tt          = React.useMemo.call(void 0, ()=>Object.values(cvsAgg).reduce((a,v)=>({total:a.total+v.total,booked:a.booked+v.booked,notBooked:a.notBooked+v.notBooked,pitched:a.pitched+v.pitched,sold:a.sold+v.sold,revenue:a.revenue+v.revenue}),{total:0,booked:0,notBooked:0,pitched:0,sold:0,revenue:0}),[cvsAgg]);
+  const revenue     = React.useMemo.call(void 0, ()=>soldLeads.reduce((s,l)=>s+(parseFloat(l.revenue)||0),0),[soldLeads]);
   const netRev      = revenue - deptCost;
   const hasData     = periodLeads.length > 0 || pDates.length > 0 || eDates.length > 0;
 
@@ -3221,7 +3238,7 @@ function Reports({ managers, canvassers, closers, entries, payments, expenses, l
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function GraceBanner({ leads, myCloserName, graceOptOuts, setGraceOptOuts }) {
-  const [confirming, setConfirming] = useState(false);
+  const [confirming, setConfirming] = React.useState.call(void 0, false);
   if (!isInGracePeriod(leads, myCloserName, graceOptOuts)) return null;
   return (
     React.createElement('div', { style: {background:"linear-gradient(135deg,#7c3aed,#6d28d9)",borderRadius:"14px",padding:"14px 16px",marginBottom:"14px"},}
@@ -3261,9 +3278,9 @@ function GraceBanner({ leads, myCloserName, graceOptOuts, setGraceOptOuts }) {
 }
 
 function MyStats({ userName, role, canvassers, closers, allTimeCvs, allTimeClosers, tmCvs, wkCvs, hireDates, leads, graceOptOuts, setGraceOptOuts, showDrill, jobProfits }) {
-  const [tab, setTab] = useState("week");
-  const [customFrom, setCustomFrom] = useState(()=>{ const d=new Date(); d.setDate(1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`; });
-  const [customTo,   setCustomTo]   = useState(todayStr());
+  const [tab, setTab] = React.useState.call(void 0, "week");
+  const [customFrom, setCustomFrom] = React.useState.call(void 0, ()=>{ const d=new Date(); d.setDate(1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`; });
+  const [customTo,   setCustomTo]   = React.useState.call(void 0, todayStr());
   const isCloser = role==="CLOSER";
 
   // Canvasser data
@@ -3291,11 +3308,11 @@ function MyStats({ userName, role, canvassers, closers, allTimeCvs, allTimeClose
     revenue:  a.revenue+(l.outcome==="sold"?parseFloat(l.revenue)||0:0),
   }), emptyFM);
 
-  const myLastWk   = useMemo(()=>!isCloser?aggFM(fmLeads.filter(l=>{const d=l.createdDate||"";return d>=prevWkStart&&d<=prevWkEnd;})):emptyFM,[leads,myFMName,isCloser]);
-  const myLastMth  = useMemo(()=>!isCloser?aggFM(fmLeads.filter(l=>getMonthKey(l.createdDate||"")===lmKey2)):emptyFM,[leads,myFMName,isCloser]);
-  const myThisYr   = useMemo(()=>!isCloser?aggFM(fmLeads.filter(l=>(l.createdDate||"").slice(0,4)===String(yr2))):emptyFM,[leads,myFMName,isCloser]);
-  const myLastYr   = useMemo(()=>!isCloser?aggFM(fmLeads.filter(l=>(l.createdDate||"").slice(0,4)===String(yr2-1))):emptyFM,[leads,myFMName,isCloser]);
-  const myCustomFM = useMemo(()=>!isCloser&&tab==="custom"?aggFM(fmLeads.filter(l=>{const d=l.createdDate||"";return d>=customFrom&&d<=customTo;})):emptyFM,[leads,myFMName,tab,customFrom,customTo,isCloser]);
+  const myLastWk   = React.useMemo.call(void 0, ()=>!isCloser?aggFM(fmLeads.filter(l=>{const d=l.createdDate||"";return d>=prevWkStart&&d<=prevWkEnd;})):emptyFM,[leads,myFMName,isCloser]);
+  const myLastMth  = React.useMemo.call(void 0, ()=>!isCloser?aggFM(fmLeads.filter(l=>getMonthKey(l.createdDate||"")===lmKey2)):emptyFM,[leads,myFMName,isCloser]);
+  const myThisYr   = React.useMemo.call(void 0, ()=>!isCloser?aggFM(fmLeads.filter(l=>(l.createdDate||"").slice(0,4)===String(yr2))):emptyFM,[leads,myFMName,isCloser]);
+  const myLastYr   = React.useMemo.call(void 0, ()=>!isCloser?aggFM(fmLeads.filter(l=>(l.createdDate||"").slice(0,4)===String(yr2-1))):emptyFM,[leads,myFMName,isCloser]);
+  const myCustomFM = React.useMemo.call(void 0, ()=>!isCloser&&tab==="custom"?aggFM(fmLeads.filter(l=>{const d=l.createdDate||"";return d>=customFrom&&d<=customTo;})):emptyFM,[leads,myFMName,tab,customFrom,customTo,isCloser]);
 
   const dFM = tab==="week"?myWk:tab==="month"?myTm:tab==="lastweek"?myLastWk:tab==="lastmonth"?myLastMth:tab==="year"?myThisYr:tab==="lastyear"?myLastYr:tab==="custom"?myCustomFM:myAll;
 
@@ -3305,7 +3322,7 @@ function MyStats({ userName, role, canvassers, closers, allTimeCvs, allTimeClose
   const myCloserAll = _optionalChain([allTimeClosers, 'optionalAccess', _109 => _109[myCloserName]])||emptyC;
   const tmKey = getMonthKey(todayStr()), wkKey = getWeekKey(todayStr());
   const yrKey = String(new Date().getFullYear());
-  const myCloserTm = useMemo(()=>{
+  const myCloserTm = React.useMemo.call(void 0, ()=>{
     if (!isCloser) return emptyC;
     const filtered = (leads||[]).filter(l=>{
       if (l.outcome==="sold")    return getMonthKey(l.soldDate||l.createdDate)===tmKey;
@@ -3314,7 +3331,7 @@ function MyStats({ userName, role, canvassers, closers, allTimeCvs, allTimeClose
     });
     return aggClosers(filtered, [myCloserName])[myCloserName]||emptyC;
   },[leads,myCloserName,tmKey,isCloser]);
-  const myCloserWk = useMemo(()=>{
+  const myCloserWk = React.useMemo.call(void 0, ()=>{
     if (!isCloser) return emptyC;
     const filtered = (leads||[]).filter(l=>{
       if (l.outcome==="sold")    return getWeekKey(l.soldDate||l.createdDate)===wkKey;
@@ -3323,7 +3340,7 @@ function MyStats({ userName, role, canvassers, closers, allTimeCvs, allTimeClose
     });
     return aggClosers(filtered, [myCloserName])[myCloserName]||emptyC;
   },[leads,myCloserName,wkKey,isCloser]);
-  const myCloserYr = useMemo(()=>{
+  const myCloserYr = React.useMemo.call(void 0, ()=>{
     if (!isCloser) return emptyC;
     const filtered = (leads||[]).filter(l=>{
       const d = l.soldDate||l.apptDate||l.createdDate||"";
@@ -3333,7 +3350,7 @@ function MyStats({ userName, role, canvassers, closers, allTimeCvs, allTimeClose
     });
     return aggClosers(filtered, [myCloserName])[myCloserName]||emptyC;
   },[leads,myCloserName,yrKey,isCloser]);
-  const myCloserCustom = useMemo(()=>{
+  const myCloserCustom = React.useMemo.call(void 0, ()=>{
     if (!isCloser||tab!=="custom") return emptyC;
     const filtered = (leads||[]).filter(l=>{
       const d = l.soldDate||l.apptDate||l.createdDate||"";
@@ -3821,13 +3838,13 @@ function calcJobProfit(revenue, jp) {
 }
 
 function JobProfit({ leads, jobProfits, setJobProfits, closers, showToast, role, updateLead_, openLeadEdit }) {
-  const [jpPeriod,   setJpPeriod]   = useState("all");
-  const [jpFrom,     setJpFrom]     = useState(()=>{ const d=new Date(); d.setDate(1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`; });
-  const [jpTo,       setJpTo]       = useState(todayStr());
-  const [selId, setSelId] = useState(null);
-  const [form, setForm] = useState({ labor:"", materials:"", commissionPct:"", paymentType:"cash", notes:"", commissionPayments:[] });
+  const [jpPeriod,   setJpPeriod]   = React.useState.call(void 0, "all");
+  const [jpFrom,     setJpFrom]     = React.useState.call(void 0, ()=>{ const d=new Date(); d.setDate(1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`; });
+  const [jpTo,       setJpTo]       = React.useState.call(void 0, todayStr());
+  const [selId, setSelId] = React.useState.call(void 0, null);
+  const [form, setForm] = React.useState.call(void 0, { labor:"", materials:"", commissionPct:"", paymentType:"cash", notes:"", commissionPayments:[] });
 
-  const { jpStart, jpEnd } = useMemo(()=>{
+  const { jpStart, jpEnd } = React.useMemo.call(void 0, ()=>{
     const today = todayStr();
     const yr = new Date().getFullYear();
     const lm = new Date(); lm.setMonth(lm.getMonth()-1);
@@ -3847,16 +3864,16 @@ function JobProfit({ leads, jobProfits, setJobProfits, closers, showToast, role,
     return { jpStart:"0000-00-00", jpEnd:"9999-99-99" };
   },[jpPeriod, jpFrom, jpTo]);
 
-  const soldLeads = useMemo(()=>(leads||[]).filter(l=>{
+  const soldLeads = React.useMemo.call(void 0, ()=>(leads||[]).filter(l=>{
     if (l.outcome!=="sold") return false;
     const d = l.soldDate||l.createdDate||"";
     return d>=jpStart && d<=jpEnd;
   }).sort((a,b)=>(b.soldDate||b.createdDate||"").localeCompare(a.soldDate||a.createdDate||"")),[leads,jpStart,jpEnd]);
-  const [newPayDate, setNewPayDate] = useState(todayStr());
-  const [newPayAmt,  setNewPayAmt]  = useState("");
-  const [newPayNote, setNewPayNote] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [jpSearch, setJpSearch] = useState("");
+  const [newPayDate, setNewPayDate] = React.useState.call(void 0, todayStr());
+  const [newPayAmt,  setNewPayAmt]  = React.useState.call(void 0, "");
+  const [newPayNote, setNewPayNote] = React.useState.call(void 0, "");
+  const [filterStatus, setFilterStatus] = React.useState.call(void 0, "all");
+  const [jpSearch, setJpSearch] = React.useState.call(void 0, "");
 
   const openJob = (l) => {
     setSelId(l.id);
@@ -4309,7 +4326,7 @@ function Leaders({ managers, canvassers, closers, leads, graceOptOuts, showDrill
   const toDate     = ldrsToDate;
   const setToDate  = setLdrsToDate;
 
-  const { from, to } = useMemo(()=>{
+  const { from, to } = React.useMemo.call(void 0, ()=>{
     const yr  = new Date().getFullYear();
     const lm  = new Date(); lm.setMonth(lm.getMonth()-1);
     const lmKey = `${lm.getFullYear()}-${String(lm.getMonth()+1).padStart(2,"0")}`;
@@ -4332,10 +4349,10 @@ function Leaders({ managers, canvassers, closers, leads, graceOptOuts, showDrill
     return { from:fromDate, to:toDate };
   },[preset, fromDate, toDate, today]);
 
-  const filteredLeads = useMemo(()=>leads.filter(l=>l.createdDate>=from&&l.createdDate<=to),[leads,from,to]);
-  const mgrAgg    = useMemo(()=>aggMgrFromLeads(filteredLeads,managers),[filteredLeads,managers]);
-  const cvsAgg    = useMemo(()=>aggLeads(filteredLeads,canvassers),[filteredLeads,canvassers]);
-  const closerAgg = useMemo(()=>aggClosers(filteredLeads,closers||[]),[filteredLeads,closers]);
+  const filteredLeads = React.useMemo.call(void 0, ()=>leads.filter(l=>l.createdDate>=from&&l.createdDate<=to),[leads,from,to]);
+  const mgrAgg    = React.useMemo.call(void 0, ()=>aggMgrFromLeads(filteredLeads,managers),[filteredLeads,managers]);
+  const cvsAgg    = React.useMemo.call(void 0, ()=>aggLeads(filteredLeads,canvassers),[filteredLeads,canvassers]);
+  const closerAgg = React.useMemo.call(void 0, ()=>aggClosers(filteredLeads,closers||[]),[filteredLeads,closers]);
 
   const byAppts    = [...managers].map(m=>({name:m,...mgrAgg[m]})).sort((a,b)=>(b.appts||0)-(a.appts||0));
   const byMgrRev   = [...managers].map(m=>({name:m,...mgrAgg[m]})).sort((a,b)=>(b.revenue||0)-(a.revenue||0));
@@ -4368,7 +4385,7 @@ function Leaders({ managers, canvassers, closers, leads, graceOptOuts, showDrill
   // All revenue scores are normalized relative to the highest revenue earner across all roles.
 
 
-  const fmMvp = useMemo(()=>{
+  const fmMvp = React.useMemo.call(void 0, ()=>{
     const entries = canvassers.map(name=>{
       const e = cvsAgg[name]||{};
       const booked=e.booked||0, nb=e.notBooked||0, sold=e.sold||0, pitched=e.pitched||0, rev=e.revenue||0;
@@ -4411,7 +4428,7 @@ function Leaders({ managers, canvassers, closers, leads, graceOptOuts, showDrill
     }).sort((a,b)=>b.score-a.score);
   },[cvsAgg,canvassers]);
 
-  const salesMvp = useMemo(()=>{
+  const salesMvp = React.useMemo.call(void 0, ()=>{
     const entries = (closers||[]).map(name=>{
       const e = closerAgg[name]||{};
       const rev=e.revenue||0, sold=e.sold||0, appts=e.appts||0;
@@ -4448,7 +4465,7 @@ function Leaders({ managers, canvassers, closers, leads, graceOptOuts, showDrill
   },[closerAgg,closers]);
 
   // Manager MVP — same metrics as canvasser (booked, book rate, show rate, revenue)
-  const mgrMvp = useMemo(()=>{
+  const mgrMvp = React.useMemo.call(void 0, ()=>{
     const entries = managers.map(name=>{
       const e = mgrAgg[name]||{};
       const booked=e.booked||0, nb=e.notBooked||0, pitched=e.pitched||0, rev=e.revenue||0;
@@ -4502,7 +4519,7 @@ function Leaders({ managers, canvassers, closers, leads, graceOptOuts, showDrill
     )
   );
 
-  const [section, setSection] = useState("sales");
+  const [section, setSection] = React.useState.call(void 0, "sales");
 
   return (
     React.createElement('div', null
@@ -4890,16 +4907,16 @@ const EXP_CATS = ["⛽ Gas","🚗 Vehicle","🛒 Supplies","🍽️ Meals","📦
 // SETTINGS
 // ═══════════════════════════════════════════════════════════════════════════════
 function Settings({ managers, setManagers, canvassers, setCanvassers, closers, setClosers, pins, setPins, hireDates, setHireDates, sharedPins, setSharedPins, showToast, showConfirm, leads, clearLeads, addLead_, bulkAddLeads_, bulkUpdateLeads_, jobProfits, setJobProfits, deptCosts, setDeptCosts, payments, setPayments, entries, expenses, setEntries, setExpenses }) {
-  const [addingM,      setAddingM]      = useState(false);
-  const [addingC,      setAddingC]      = useState(false);
-  const [addingCL,     setAddingCL]     = useState(false);
-  const [newName,      setNewName]      = useState("");
-  const [editPin,      setEditPin]      = useState(null);
-  const [pinInput,     setPinInput]     = useState("");
-  const [hireDateFor,  setHireDateFor]  = useState(null);
-  const [hireDateDraft,setHireDateDraft]= useState("");
-  const [renameName,   setRenameName]   = useState(null);  // current name being renamed
-  const [renameDraft,  setRenameDraft]  = useState("");
+  const [addingM,      setAddingM]      = React.useState.call(void 0, false);
+  const [addingC,      setAddingC]      = React.useState.call(void 0, false);
+  const [addingCL,     setAddingCL]     = React.useState.call(void 0, false);
+  const [newName,      setNewName]      = React.useState.call(void 0, "");
+  const [editPin,      setEditPin]      = React.useState.call(void 0, null);
+  const [pinInput,     setPinInput]     = React.useState.call(void 0, "");
+  const [hireDateFor,  setHireDateFor]  = React.useState.call(void 0, null);
+  const [hireDateDraft,setHireDateDraft]= React.useState.call(void 0, "");
+  const [renameName,   setRenameName]   = React.useState.call(void 0, null);  // current name being renamed
+  const [renameDraft,  setRenameDraft]  = React.useState.call(void 0, "");
 
   const openRename = (name) => { setRenameName(name); setRenameDraft(name); setEditPin(null); };
   const saveRename = (list, setList) => {
@@ -4945,8 +4962,8 @@ function Settings({ managers, setManagers, canvassers, setCanvassers, closers, s
   };
   const revokePin=(n)=>{ setPins(p=>{const q={...p};delete q[n];return q;}); showToast(`${n}'s PIN revoked`,"error"); };
 
-  const [showClearModal, setShowClearModal] = useState(false);
-  const [clearInput,     setClearInput]     = useState("");
+  const [showClearModal, setShowClearModal] = React.useState.call(void 0, false);
+  const [clearInput,     setClearInput]     = React.useState.call(void 0, "");
 
   const BACKUP_KEY = "nearme_v7_backup";
 
